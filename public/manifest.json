@@ -1,0 +1,18 @@
+{
+  "name": "Rau Nhà Phố — Rau củ quả tươi mỗi ngày",
+  "short_name": "Rau Nhà Phố",
+  "description": "Cửa hàng rau củ quả tươi sạch, giao nhanh tận nơi. Khuyến mại mỗi ngày, nguồn gốc rõ ràng.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d3d2a",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

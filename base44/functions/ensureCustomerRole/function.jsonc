@@ -1,0 +1,14 @@
+{
+  "name": "ensureCustomerRole",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "entity",
+      "name": "on_user_create",
+      "description": "Assign customer role (user) to newly registered accounts",
+      "entity_name": "User",
+      "event_types": ["create"],
+      "is_active": true
+    }
+  ]
+}

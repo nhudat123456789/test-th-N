@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 204 16% 19%;
+    --card: 0 0% 100%;
+    --card-foreground: 204 16% 19%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 204 16% 19%;
+    --primary: 155 64% 14%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 150 30% 96%;
+    --secondary-foreground: 155 64% 14%;
+    --muted: 150 25% 96%;
+    --muted-foreground: 150 10% 42%;
+    --accent: 104 49% 51%;
+    --accent-foreground: 155 64% 14%;
+    --destructive: 0 65% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 150 20% 90%;
+    --input: 150 20% 90%;
+    --ring: 104 49% 51%;
+    --chart-1: 155 64% 30%;
+    --chart-2: 104 49% 51%;
+    --chart-3: 43 74% 66%;
+    --chart-4: 0 65% 51%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
+    --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 155 64% 14%;
+    --sidebar-primary: 155 64% 14%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 150 30% 96%;
+    --sidebar-accent-foreground: 155 64% 14%;
+    --sidebar-border: 150 20% 90%;
+    --sidebar-ring: 104 49% 51%;
+  }
+
+  .dark {
+    --background: 155 30% 7%;
+    --foreground: 150 20% 92%;
+    --card: 155 30% 9%;
+    --card-foreground: 150 20% 92%;
+    --popover: 155 30% 9%;
+    --popover-foreground: 150 20% 92%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 155 64% 14%;
+    --secondary: 155 20% 16%;
+    --secondary-foreground: 150 20% 92%;
+    --muted: 155 20% 16%;
+    --muted-foreground: 150 12% 62%;
+    --accent: 104 49% 45%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 155 20% 18%;
+    --input: 155 20% 18%;
+    --ring: 104 49% 45%;
+    --sidebar-background: 155 30% 9%;
+    --sidebar-foreground: 150 20% 92%;
+    --sidebar-primary: 104 49% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 155 20% 16%;
+    --sidebar-accent-foreground: 150 20% 92%;
+    --sidebar-border: 155 20% 18%;
+    --sidebar-ring: 104 49% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  ::selection {
+    @apply bg-accent/25 text-primary;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .text-balance { text-wrap: balance; }
+  .glass {
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .leaf-fade-up {
+    animation: leafFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes leafFadeUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

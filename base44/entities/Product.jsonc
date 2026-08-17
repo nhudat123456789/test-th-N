@@ -1,0 +1,59 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "old_price": {
+      "type": "number"
+    },
+    "discount_percent": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "stock": {
+      "type": "number"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_stock",
+        "out_of_stock"
+      ],
+      "default": "in_stock"
+    },
+    "is_best_seller": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_combo": {
+      "type": "boolean",
+      "default": false
+    },
+    "origin": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ]
+}
