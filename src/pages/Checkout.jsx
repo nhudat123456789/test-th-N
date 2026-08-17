@@ -56,7 +56,7 @@ export default function Checkout() {
         note: form.note,
       });
 
-      const order = result?.order ?? result;
+      const order = result?.data?.order ?? result?.order ?? result?.data ?? result;
 
       if (user) {
         base44.auth.updateMe({ phone: form.phone, address: form.address }).catch(() => {});
@@ -76,7 +76,7 @@ export default function Checkout() {
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
         <CheckCircle2 className="mx-auto mb-4 text-accent" size={56} />
         <h1 className="font-display text-4xl text-primary">Đặt hàng thành công!</h1>
-        <p className="mt-3 text-muted-foreground">Cảm ơn {done.customer_name}! Đơn hàng <span className="font-mono text-primary">#{done.id.slice(-8).toUpperCase()}</span> đã được tiếp nhận. Chúng tôi sẽ giao tươi đến bạn sớm nhất.</p>
+        <p className="mt-3 text-muted-foreground">Cảm ơn {done.customer_name}! Đơn hàng <span className="font-mono text-primary">#{done?.id ? done.id.slice(-8).toUpperCase() : 'ĐANG XỬ LÝ'}</span> đã được tiếp nhận. Chúng tôi sẽ giao tươi đến bạn sớm nhất.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/my-garden"><Button className="rounded-full bg-accent text-white hover:bg-accent/90">Theo dõi vườn rau</Button></Link>
           <Link to="/products"><Button variant="outline" className="rounded-full">Tiếp tục mua sắm</Button></Link>

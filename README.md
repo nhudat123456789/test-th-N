@@ -786,3 +786,107 @@ npm run dev
 Mở URL mà Vite hiển thị và đăng nhập.
 
 Nếu sản phẩm, hình ảnh và tài khoản load bình thường thì setup hoàn tất.
+
+# Checkout Troubleshooting
+
+## Lỗi 404 khi đặt hàng
+
+Nếu đăng nhập, sản phẩm và hình ảnh vẫn hoạt động bình thường nhưng khi nhấn **Đặt hàng** lại báo:
+
+```text
+Request failed with status code 404
+```
+
+hãy kiểm tra backend function `placeOrder` đã được deploy lên Base44 hay chưa:
+
+```bash
+base44 functions list
+```
+
+Nếu danh sách không có:
+
+```text
+placeOrder
+```
+
+thì deploy bằng:
+
+```bash
+base44 functions deploy placeOrder
+```
+
+Sau đó kiểm tra lại:
+
+```bash
+base44 functions list
+```
+
+Remote nên có `placeOrder`.
+
+Frontend gọi function bằng:
+
+```js
+base44.functions.invoke('placeOrder', data)
+```
+
+Việc file `base44/functions/placeOrder/entry.ts` tồn tại trong Git không đồng nghĩa function đã được deploy lên Base44. Nếu hosted backend chưa có `placeOrder`, checkout có thể trả về 404.
+
+---
+
+## Màn hình trắng sau khi đặt hàng
+
+Nếu đơn hàng được tạo nhưng trang Checkout chuyển thành màn hình trắng, mở:
+
+```text
+F12 → Console
+```
+
+Nếu thấy:
+
+```text
+TypeError: Cannot read properties of undefined (reading 'slice')
+```
+
+thì kiểm tra:
+
+```text
+src/pages/Checkout.jsx
+```
+
+Response của `base44.functions.invoke()` nên được xử lý an toàn:
+
+```js
+const order =
+  result?.data?.order ??
+  result?.order ??
+  result?.data ??
+  result;
+```
+
+Không gọi trực tiếp:
+
+```js
+done.id.slice(-8)
+```
+
+mà nên kiểm tra `id` trước:
+
+```jsx
+#{done?.id ? done.id.slice(-8).toUpperCase() : 'ĐANG XỬ LÝ'}
+```
+
+Điều này tránh React crash nếu response của backend chưa có `id` tại vị trí frontend dự kiến.
+
+Sau khi sửa `Checkout.jsx`, lưu file và reload Vite:
+
+```text
+Ctrl + S
+```
+
+Nếu cần restart:
+
+```bash
+Ctrl + C
+npm run dev
+```
+
