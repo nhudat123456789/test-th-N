@@ -1,41 +1,47 @@
 import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/lib/AuthContext';
-import { getPostLoginPath } from '@/lib/roles';
-import { safeReturnTo } from '@/lib/authReturnTo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Leaf, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { applyAuthSession, isAuthenticated, user, authChecked, isLoadingAuth } = useAuth();
-  const returnTo = safeReturnTo();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const returnTo = params.get('returnTo') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (authChecked && !isLoadingAuth && isAuthenticated) {
-    return <Navigate to={getPostLoginPath(user, returnTo)} replace />;
-  }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const { user } = await base44.auth.loginViaEmailPassword(email, password);
-      applyAuthSession(user);
-      navigate(getPostLoginPath(user, returnTo), { replace: true });
-    } catch (err) {
-      setError(err?.message || 'Email hoặc mật khẩu không đúng.');
-    } finally {
-      setLoading(false);
+  try {
+    const loginPromise = base44.auth.loginViaEmailPassword(email, password);
+
+    // Một số trường hợp SDK đăng nhập thành công nhưng promise không kết thúc ngay
+    await Promise.race([
+      loginPromise,
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
+
+    // Xác nhận session thật sự đã đăng nhập
+    const currentUser = await base44.auth.me();
+
+    if (!currentUser) {
+      throw new Error('Không thể xác nhận phiên đăng nhập.');
     }
-  };
+
+    window.location.replace(returnTo);
+  } catch (err) {
+    setError(err?.message || 'Email hoặc mật khẩu không đúng.');
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-screen flex-col bg-emerald-50/40 md:flex-row">
