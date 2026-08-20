@@ -3,13 +3,9 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useCart } from '@/lib/cart-context';
-import { Button } from '@/components/ui/button';
 
-/**
- * @param {{ product: any }} props
- */
+
 export default function ProductCard({ product }) {
-  // @ts-ignore
   const { addItem } = useCart();
   const out = product.status === 'out_of_stock' || (product.stock ?? 0) <= 0;
   const onSale = product.old_price && product.old_price > product.price;
@@ -20,7 +16,6 @@ export default function ProductCard({ product }) {
         <Link to={`/products/${product.id}`} className="block aspect-square">
           {product.images?.[0] ? (
             <Image
-              // @ts-ignore
               src={product.images[0]}
               alt={product.name}
               fittingType="fill"

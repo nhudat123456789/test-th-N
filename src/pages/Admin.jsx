@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Image } from '@/components/ui/image';
-import { LayoutDashboard, Package, ClipboardList, MessageSquare, Star, Plus, Pencil, Trash2, X, Reply } from 'lucide-react';
+import { LayoutDashboard, Package, ClipboardList, Tag, MessageSquare, Star, Plus, Pencil, Trash2, X, Reply } from 'lucide-react';
 
 const TABS = [
   { id: 'products', label: 'Sản phẩm', icon: Package },

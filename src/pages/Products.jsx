@@ -12,34 +12,9 @@ const SORTS = [
   { value: 'price_desc', label: 'Giá cao → thấp' },
 ];
 
-/**
- * @typedef {Object} Product
- * @property {string} id
- * @property {string} name
- * @property {string} category
- * @property {number} price
- * @property {number} [old_price]
- * @property {number} [discount_percent]
- * @property {string} unit
- * @property {number} stock
- * @property {string[]} images
- * @property {string} description
- * @property {string} status
- * @property {boolean} is_best_seller
- * @property {boolean} is_combo
- * @property {string} origin
- */
-
-/**
- * @typedef {Object} Category
- * @property {string} name
- */
-
 export default function Products() {
   const [params, setParams] = useSearchParams();
-  // @ts-ignore
   const [products, setProducts] = useState([]);
-  // @ts-ignore
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
@@ -54,17 +29,13 @@ export default function Products() {
 
   useEffect(() => {
     setLoading(true);
-    // @ts-ignore
     base44.entities.Product.list('-created_date', 100).then((d) => { setProducts(d); setLoading(false); }).catch(() => setLoading(false));
-    // @ts-ignore
     base44.entities.Category.list().then(setCategories).catch(() => {});
   }, []);
 
-  // @ts-ignore
   const cats = categories.length ? categories.map((c) => c.name) : ['Rau Lá', 'Củ Quả', 'Trái Cây', 'Gia Vị'];
 
   const filtered = useMemo(() => {
-    // @ts-ignore
     let list = [...products];
     if (search) list = list.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
     if (category) list = list.filter((p) => p.category === category);
@@ -77,10 +48,10 @@ export default function Products() {
     return list;
   }, [products, search, category, saleOnly, inStockOnly, combo, maxPrice, sort]);
 
-  const update = /** @type {(key: string, val: string | boolean) => void} */ (key, val) => {
+  const update = (key, val) => {
     const next = new URLSearchParams(params);
     if (val === '' || val === false || val === null) next.delete(key);
-    else next.set(key, String(val));
+    else next.set(key, val);
     setParams(next);
   };
 
