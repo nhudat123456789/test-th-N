@@ -32,6 +32,7 @@ export default function Checkout() {
   const [done, setDone] = useState(null);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const hasCombo = items.some((i) => i.is_combo);
 
   const placeOrder = async (e) => {
     e.preventDefault();
@@ -39,25 +40,33 @@ export default function Checkout() {
     if (!form.name || !form.phone || !form.address) { setError('Vui lòng điền họ tên, số điện thoại và địa chỉ giao hàng.'); return; }
     setLoading(true);
     try {
-      const result = await base44.functions.invoke('placeOrder', {
+      const order = await base44.entities.Order.create({
         customer_name: form.name,
         customer_email: form.email || user?.email,
         customer_phone: form.phone,
         shipping_address: form.address,
-        items: items.map((i) => ({
-          product_id: i.id,
-          name: i.name,
-          price: i.price,
-          quantity: i.qty,
-          image: i.image,
-        })),
+        items: items.map((i) => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, image: i.image })),
         total,
+        status: 'pending',
         payment_method: payment,
+        payment_status: payment === 'cod' ? 'unpaid' : 'unpaid',
         note: form.note,
       });
 
-      const order = result?.data?.order ?? result?.order ?? result?.data ?? result;
+      // decrement stock
+      await Promise.all(
+        items.map((it) =>
+          base44.entities.Product.get(it.id).then((p) => {
+            const ns = Math.max(0, (p.stock ?? 0) - it.qty);
+            return base44.entities.Product.update(it.id, {
+              stock: ns,
+              status: ns <= 0 ? 'out_of_stock' : 'in_stock',
+            });
+          }).catch(() => {})
+        )
+      );
 
+      // save phone/address to user profile
       if (user) {
         base44.auth.updateMe({ phone: form.phone, address: form.address }).catch(() => {});
       }
@@ -76,7 +85,7 @@ export default function Checkout() {
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
         <CheckCircle2 className="mx-auto mb-4 text-accent" size={56} />
         <h1 className="font-display text-4xl text-primary">Đặt hàng thành công!</h1>
-        <p className="mt-3 text-muted-foreground">Cảm ơn {done.customer_name}! Đơn hàng <span className="font-mono text-primary">#{done?.id ? done.id.slice(-8).toUpperCase() : 'ĐANG XỬ LÝ'}</span> đã được tiếp nhận. Chúng tôi sẽ giao tươi đến bạn sớm nhất.</p>
+        <p className="mt-3 text-muted-foreground">Cảm ơn {done.customer_name}! Đơn hàng <span className="font-mono text-primary">#{done.id.slice(-8).toUpperCase()}</span> đã được tiếp nhận. Chúng tôi sẽ giao tươi đến bạn sớm nhất.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/my-garden"><Button className="rounded-full bg-accent text-white hover:bg-accent/90">Theo dõi vườn rau</Button></Link>
           <Link to="/products"><Button variant="outline" className="rounded-full">Tiếp tục mua sắm</Button></Link>
@@ -120,8 +129,8 @@ export default function Checkout() {
                 <Input value={form.address} onChange={set('address')} required placeholder="Số nhà, đường, phường, quận, TP" />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
-                <Label>Ghi chú (tuỳ chọn)</Label>
-                <Textarea value={form.note} onChange={set('note')} rows={2} placeholder="Thời gian giao, lưu ý giao hàng..." />
+                <Label>{hasCombo ? 'Quý khách vui lòng ghi chú các loại rau, củ, quả yêu thích và những loại không sử dụng để chúng tôi có thể chuẩn bị phù hợp hơn' : 'Ghi chú (tuỳ chọn)'}</Label>
+                <Textarea value={form.note} onChange={set('note')} rows={hasCombo ? 3 : 2} placeholder="Rau của quả yêu thích, không yêu thích ..." />
               </div>
             </div>
           </section>

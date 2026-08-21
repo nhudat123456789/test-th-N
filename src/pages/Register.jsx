@@ -41,31 +41,65 @@ export default function Register() {
     }
   };
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const result = await base44.auth.verifyOtp({ email, otpCode: otp });
+const handleVerify = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-      if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
-        const sessionUser = result?.user ?? await base44.auth.me();
-        applyAuthSession(sessionUser);
-        navigate(getPostLoginPath(sessionUser, returnTo), { replace: true });
-        return;
-      }
 
-      const { user: loginUser } = await base44.auth.loginViaEmailPassword(email, password);
-      applyAuthSession(loginUser);
-      navigate(getPostLoginPath(loginUser, returnTo), { replace: true });
-    } catch (err) {
-      setError(err?.message || 'Mã OTP không đúng.');
-    } finally {
-      setLoading(false);
+  try {
+    const result = await base44.auth.verifyOtp({
+      email,
+      otpCode: otp,
+    });
+
+
+    if (result?.access_token) {
+      base44.auth.setToken(result.access_token);
+
+
+      const sessionUser =
+        result?.user ?? await base44.auth.me();
+
+
+      applyAuthSession(sessionUser);
+
+
+      window.location.replace(
+        getPostLoginPath(sessionUser, returnTo)
+      );
+
+
+      return;
     }
-  };
 
+
+    // OTP đúng nhưng SDK có thể không tự hoàn tất login ngay
+    await Promise.race([
+      base44.auth.loginViaEmailPassword(email, password),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
+
+
+    const sessionUser = await base44.auth.me();
+
+
+    if (!sessionUser) {
+      throw new Error('Không thể xác nhận tài khoản sau khi nhập OTP.');
+    }
+
+
+    applyAuthSession(sessionUser);
+
+
+    window.location.replace(
+      getPostLoginPath(sessionUser, returnTo)
+    );
+  } catch (err) {
+    setError(err?.message || 'Mã OTP không đúng.');
+    setLoading(false);
+  }
+};
   const resend = async () => {
     try { await base44.auth.resendOtp(email); } catch {}
   };
@@ -105,9 +139,13 @@ export default function Register() {
                   </div>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" disabled={loading} className="w-full rounded-full bg-primary hover:bg-primary/90">
-                  {loading ? 'Đang xử lý...' : 'Đăng ký'}
-                </Button>
+                <Button
+  type="submit"
+  disabled={loading}
+  className="w-full rounded-full bg-primary hover:bg-primary/90"
+>
+  {loading ? 'Đang đăng ký...' : 'Đăng ký'}
+</Button>
               </form>
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 Đã có tài khoản? <Link to={`/login?returnTo=${encodeURIComponent(returnTo)}`} className="font-medium text-accent hover:underline">Đăng nhập</Link>
@@ -123,9 +161,13 @@ export default function Register() {
                   <Input id="otp" required value={otp} onChange={(e) => setOtp(e.target.value)} className="text-center text-2xl tracking-[0.5em]" placeholder="000000" maxLength={6} />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" disabled={loading} className="w-full rounded-full bg-primary hover:bg-primary/90">
-                  {loading ? 'Đang xác minh...' : 'Xác minh & đăng nhập'}
-                </Button>
+               <Button
+  type="submit"
+  disabled={loading}
+  className="w-full rounded-full bg-primary hover:bg-primary/90"
+>
+  {loading ? 'Đang xác minh...' : 'Xác minh OTP'}
+</Button>
               </form>
               <button onClick={resend} className="mt-4 w-full text-center text-sm text-accent hover:underline">Gửi lại mã OTP</button>
             </>

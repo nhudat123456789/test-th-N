@@ -131,7 +131,9 @@ export default function Home() {
             <div className="mb-8 flex items-end justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-widest text-destructive">Tiết kiệm hôm nay</p>
-                <h2 className="mt-1 font-display text-4xl text-primary">Đang khuyến mại</h2>
+                <h2 className="mt-1 text-4xl text-primary">
+  Đang khuyến mãi
+</h2>
               </div>
               <Link to="/products?sale=1" className="hidden items-center gap-1 text-sm font-medium text-primary hover:text-accent sm:flex">
                 Xem tất cả <ArrowRight size={16} />
