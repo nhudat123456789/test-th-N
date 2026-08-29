@@ -12,6 +12,22 @@ const SORTS = [
   { value: 'price_desc', label: 'Giá cao → thấp' },
 ];
 
+const normalizeCategoryName = (name = '') => {
+  const value = String(name || '').trim();
+  const normalized = value.toLowerCase();
+
+  if (['trái cây', 'trai cay', 'rau củ quả', 'rau cu qua'].includes(normalized)) {
+    return 'Rau Củ Quả';
+  }
+
+  return value;
+};
+
+const isLegacyCategory = (value = '') => {
+  const normalized = String(value || '').trim().toLowerCase();
+  return ['trái cây', 'trai cay'].includes(normalized);
+};
+
 export default function Products() {
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -29,20 +45,26 @@ export default function Products() {
 
   useEffect(() => {
     setLoading(true);
-    base44.entities.Product.list('-created_date', 100).then((d) => { setProducts(d); setLoading(false); }).catch(() => setLoading(false));
-    base44.entities.Category.list().then(setCategories).catch(() => {});
+    base44.entities.Product.list('-created_date', 100).then((d) => {
+      const legacyProducts = d.filter((p) => isLegacyCategory(p.category));
+      const normalizedProducts = d.map((p) => ({ ...p, category: normalizeCategoryName(p.category) }));
+
+      if (legacyProducts.length) {
+        Promise.all(
+          legacyProducts.map((p) =>
+            base44.entities.Product.update(p.id, { ...p, category: 'Rau Củ Quả' })
+          )
+        ).catch(() => {});
+      }
+
+      setProducts(normalizedProducts);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+
+    base44.entities.Category.list().then((cats) => {
+      setCategories((cats || []).map((c) => ({ ...c, name: normalizeCategoryName(c.name) })));
+    }).catch(() => {});
   }, []);
-
-  const normalizeCategoryName = (name = '') => {
-    const value = String(name || '').trim();
-    const normalized = value.toLowerCase();
-
-    if (['trái cây', 'trai cay', 'rau củ quả', 'rau cu qua'].includes(normalized)) {
-      return 'Rau Củ Quả';
-    }
-
-    return value;
-  };
 
   const cats = categories.length ? categories.map((c) => normalizeCategoryName(c.name)) : ['Rau Lá', 'Củ Quả', 'Rau Củ Quả', 'Gia Vị'];
 
