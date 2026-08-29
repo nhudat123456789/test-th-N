@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Leaf, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
+  const navigate = useNavigate();
   const location = useLocation();
+  const { applyAuthSession } = useAuth();
 
   const params = new URLSearchParams(location.search);
   const rawReturnTo = params.get('returnTo');
 
-  // Chỉ cho redirect nội bộ trong website
   const returnTo =
-    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
+    rawReturnTo &&
+    rawReturnTo.startsWith('/') &&
+    !rawReturnTo.startsWith('//')
       ? rawReturnTo
       : '/';
 
@@ -37,33 +41,25 @@ export default function Login() {
     try {
       console.log('Bắt đầu đăng nhập...');
 
-      // Base44 hiện có trường hợp request login trả 200
-      // nhưng Promise chưa resolve ngay.
       const loginPromise = base44.auth.loginViaEmailPassword(
         email.trim(),
         password
       );
 
-      // Nếu login thực sự lỗi (401, 400...) thì vẫn bắt được lỗi.
-      // Nếu request đã thành công nhưng SDK treo Promise thì sau
-      // 1.5 giây chúng ta tiếp tục kiểm tra session.
+      // Tránh trường hợp SDK request 200 nhưng promise bị treo
       await Promise.race([
         loginPromise,
         sleep(1500),
       ]);
 
-      console.log('Đang kiểm tra session...');
+      console.log('Đang kiểm tra tài khoản...');
 
       let user = null;
 
-      // Thử lấy user vài lần vì token/session có thể cần một chút
-      // thời gian để được lưu sau khi login.
       for (let attempt = 0; attempt < 6; attempt++) {
         try {
-          const mePromise = base44.auth.me();
-
           user = await Promise.race([
-            mePromise,
+            base44.auth.me(),
             sleep(1500).then(() => null),
           ]);
 
@@ -72,7 +68,7 @@ export default function Login() {
           }
         } catch (meError) {
           console.log(
-            `Chưa lấy được user, lần thử ${attempt + 1}`,
+            `Chưa lấy được user, lần ${attempt + 1}`,
             meError
           );
         }
@@ -82,19 +78,25 @@ export default function Login() {
 
       if (!user) {
         throw new Error(
-          'Đăng nhập đã được gửi nhưng chưa tạo được phiên đăng nhập. Vui lòng thử lại.'
+          'Đăng nhập thành công nhưng chưa lấy được thông tin tài khoản. Vui lòng thử lại.'
         );
       }
 
       console.log('Đăng nhập thành công:', user);
 
-      // Reload cứng để toàn bộ app/AuthContext đọc session mới.
-      window.location.replace(returnTo);
+      // Cập nhật AuthContext
+      applyAuthSession(user);
+
+      // Chuyển trang bằng React Router, KHÔNG reload app
+      navigate(returnTo, {
+        replace: true,
+      });
+
     } catch (err) {
       console.error('LOGIN ERROR:', err);
 
       const status =
-        err?.response?.status ||
+        err?.response?.status ??
         err?.status;
 
       if (status === 401 || status === 403) {
