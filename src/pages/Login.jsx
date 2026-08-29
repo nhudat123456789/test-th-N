@@ -8,91 +8,235 @@ import { Leaf, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
   const location = useLocation();
+
   const params = new URLSearchParams(location.search);
-  const returnTo = params.get('returnTo') || '/';
+  const rawReturnTo = params.get('returnTo');
+
+  // Chỉ cho redirect nội bộ trong website
+  const returnTo =
+    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
+      ? rawReturnTo
+      : '/';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const sleep = (ms) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
-  setError('');
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    console.log('Bắt đầu đăng nhập...');
+    if (loading) return;
 
-    const result = await base44.auth.loginViaEmailPassword(
-      email.trim(),
-      password
-    );
+    setError('');
+    setLoading(true);
 
-    console.log('Login thành công:', result);
+    try {
+      console.log('Bắt đầu đăng nhập...');
 
-    // Kiểm tra token/user đã dùng được chưa
-    const user = await base44.auth.me();
+      // Base44 hiện có trường hợp request login trả 200
+      // nhưng Promise chưa resolve ngay.
+      const loginPromise = base44.auth.loginViaEmailPassword(
+        email.trim(),
+        password
+      );
 
-    console.log('User:', user);
+      // Nếu login thực sự lỗi (401, 400...) thì vẫn bắt được lỗi.
+      // Nếu request đã thành công nhưng SDK treo Promise thì sau
+      // 1.5 giây chúng ta tiếp tục kiểm tra session.
+      await Promise.race([
+        loginPromise,
+        sleep(1500),
+      ]);
 
-    // Dùng reload cứng để AuthContext đọc lại session/token
-    window.location.replace(returnTo || '/');
-  } catch (err) {
-    console.error('LOGIN ERROR:', err);
+      console.log('Đang kiểm tra session...');
 
-    setError(
-      err?.message ||
-      'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.'
-    );
+      let user = null;
 
-    setLoading(false);
-  }
-};
+      // Thử lấy user vài lần vì token/session có thể cần một chút
+      // thời gian để được lưu sau khi login.
+      for (let attempt = 0; attempt < 6; attempt++) {
+        try {
+          const mePromise = base44.auth.me();
+
+          user = await Promise.race([
+            mePromise,
+            sleep(1500).then(() => null),
+          ]);
+
+          if (user) {
+            break;
+          }
+        } catch (meError) {
+          console.log(
+            `Chưa lấy được user, lần thử ${attempt + 1}`,
+            meError
+          );
+        }
+
+        await sleep(400);
+      }
+
+      if (!user) {
+        throw new Error(
+          'Đăng nhập đã được gửi nhưng chưa tạo được phiên đăng nhập. Vui lòng thử lại.'
+        );
+      }
+
+      console.log('Đăng nhập thành công:', user);
+
+      // Reload cứng để toàn bộ app/AuthContext đọc session mới.
+      window.location.replace(returnTo);
+    } catch (err) {
+      console.error('LOGIN ERROR:', err);
+
+      const status =
+        err?.response?.status ||
+        err?.status;
+
+      if (status === 401 || status === 403) {
+        setError('Email hoặc mật khẩu không chính xác.');
+      } else {
+        setError(
+          err?.response?.data?.message ||
+          err?.message ||
+          'Đăng nhập thất bại. Vui lòng thử lại.'
+        );
+      }
+
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-emerald-50/40 md:flex-row">
       <div className="flex flex-1 flex-col justify-between p-8 md:p-12">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-white"><Leaf size={18} /></span>
-          <span className="font-display text-2xl text-primary">Rau Nhà Phố</span>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-white">
+            <Leaf size={18} />
+          </span>
+
+          <span className="font-display text-2xl text-primary">
+            Rau Nhà Phố
+          </span>
         </Link>
+
         <div className="mx-auto w-full max-w-sm py-10">
-          <h1 className="font-display text-4xl text-primary">Đăng nhập</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Vui lòng đăng nhập để đặt hàng và xem lịch sử đơn.</p>
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          <h1 className="font-display text-4xl text-primary">
+            Đăng nhập
+          </h1>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Vui lòng đăng nhập để đặt hàng và xem lịch sử đơn.
+          </p>
+
+          <form
+            onSubmit={handleSubmit}
+            className="mt-8 space-y-4"
+          >
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">
+                Email
+              </Label>
+
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="pl-9" placeholder="ban@email.com" />
+                <Mail
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={16}
+                />
+
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-9"
+                  placeholder="ban@email.com"
+                  disabled={loading}
+                />
               </div>
             </div>
+
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mật khẩu</Label>
-                <Link to="/forgot-password" className="text-xs text-accent hover:underline">Quên mật khẩu?</Link>
+                <Label htmlFor="password">
+                  Mật khẩu
+                </Label>
+
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-accent hover:underline"
+                >
+                  Quên mật khẩu?
+                </Link>
               </div>
+
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9" placeholder="••••••••" />
+                <Lock
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={16}
+                />
+
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-9"
+                  placeholder="••••••••"
+                  disabled={loading}
+                />
               </div>
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full rounded-full bg-primary hover:bg-primary/90">
+
+            {error && (
+              <p className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-full bg-primary hover:bg-primary/90"
+            >
               {loading ? 'Đang xử lý...' : 'Đăng nhập'}
             </Button>
           </form>
+
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Chưa có tài khoản? <Link to={`/register?returnTo=${encodeURIComponent(returnTo)}`} className="font-medium text-accent hover:underline">Đăng ký</Link>
+            Chưa có tài khoản?{' '}
+            <Link
+              to={`/register?returnTo=${encodeURIComponent(returnTo)}`}
+              className="font-medium text-accent hover:underline"
+            >
+              Đăng ký
+            </Link>
           </p>
         </div>
+
         <div />
       </div>
+
       <div className="relative hidden md:block md:flex-1">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 to-emerald-700" />
+
         <div className="relative flex h-full flex-col justify-end p-12 text-white">
-          <p className="font-display text-4xl leading-tight">Tươi mỗi lá, sạch từng bữa.</p>
-          <p className="mt-3 max-w-sm text-emerald-100">Nguồn gốc rõ ràng, giao nhanh tận bếp — trải nghiệm mua sắm rau củ quả tươi sạch.</p>
+          <p className="font-display text-4xl leading-tight">
+            Tươi mỗi lá, sạch từng bữa.
+          </p>
+
+          <p className="mt-3 max-w-sm text-emerald-100">
+            Nguồn gốc rõ ràng, giao nhanh tận bếp — trải nghiệm
+            mua sắm rau củ quả tươi sạch.
+          </p>
         </div>
       </div>
     </div>
