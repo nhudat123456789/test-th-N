@@ -17,32 +17,38 @@ export default function Login() {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+
   setError('');
   setLoading(true);
 
   try {
-    const loginPromise = base44.auth.loginViaEmailPassword(email, password);
+    console.log('Bắt đầu đăng nhập...');
 
-    // Một số trường hợp SDK đăng nhập thành công nhưng promise không kết thúc ngay
-    await Promise.race([
-      loginPromise,
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-    ]);
+    const result = await base44.auth.loginViaEmailPassword(
+      email.trim(),
+      password
+    );
 
-    // Xác nhận session thật sự đã đăng nhập
-    const currentUser = await base44.auth.me();
+    console.log('Login thành công:', result);
 
-    if (!currentUser) {
-      throw new Error('Không thể xác nhận phiên đăng nhập.');
-    }
+    // Kiểm tra token/user đã dùng được chưa
+    const user = await base44.auth.me();
 
-    window.location.replace(returnTo);
+    console.log('User:', user);
+
+    // Dùng reload cứng để AuthContext đọc lại session/token
+    window.location.replace(returnTo || '/');
   } catch (err) {
-    setError(err?.message || 'Email hoặc mật khẩu không đúng.');
+    console.error('LOGIN ERROR:', err);
+
+    setError(
+      err?.message ||
+      'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.'
+    );
+
     setLoading(false);
   }
 };
-
   return (
     <div className="flex min-h-screen flex-col bg-emerald-50/40 md:flex-row">
       <div className="flex flex-1 flex-col justify-between p-8 md:p-12">
