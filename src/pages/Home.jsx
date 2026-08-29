@@ -10,8 +10,19 @@ const HERO = 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/67
 const CAT_IMG = {
   'Rau Lá': 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/d1bf4ccae_generated_e8ad0358.png',
   'Củ Quả': 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/1a17dfc97_generated_2ab8c650.png',
-  'Trái Cây': 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/cf57910e2_generated_fff0d306.png',
+  'Rau Củ Quả': 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/cf57910e2_generated_fff0d306.png',
   'Gia Vị': 'https://media.base44.com/images/public/6a744c90a68d158dc5771806/3dad338ad_generated_0dd42b74.png'
+};
+
+const normalizeCategoryName = (name = '') => {
+  const value = String(name || '').trim();
+  const normalized = value.toLowerCase();
+
+  if (['trái cây', 'trai cay', 'rau củ quả', 'rau cu qua'].includes(normalized)) {
+    return 'Rau Củ Quả';
+  }
+
+  return value;
 };
 
 export default function Home() {
@@ -25,8 +36,9 @@ export default function Home() {
     base44.entities.Category.list().then(setCategories).catch(() => {});
   }, []);
 
-  const cats = categories.length ? categories : [
-  { name: 'Rau Lá' }, { name: 'Củ Quả' }, { name: 'Trái Cây' }, { name: 'Gia Vị' }];
+  const cats = categories.length
+    ? categories.map((c) => ({ ...c, name: normalizeCategoryName(c.name) }))
+    : [{ name: 'Rau Lá' }, { name: 'Củ Quả' }, { name: 'Rau Củ Quả' }, { name: 'Gia Vị' }];
 
   const onSale = products.filter((p) => p.old_price && p.old_price > p.price).slice(0, 8);
   const bestSellers = products.filter((p) => p.is_best_seller).slice(0, 4);

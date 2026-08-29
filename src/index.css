@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -31,9 +31,9 @@
     --chart-4: 0 65% 51%;
     --chart-5: 27 87% 67%;
     --radius: 0.75rem;
-    --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 155 64% 14%;
@@ -82,8 +82,29 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
     font-feature-settings: "ss01", "cv01";
+  }
+
+  button,
+  input,
+  textarea,
+  select,
+  nav,
+  a {
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading,
+  .font-display {
+    font-family: var(--font-heading);
   }
 
   ::selection {
@@ -92,6 +113,8 @@
 }
 
 @layer utilities {
+  .font-body { font-family: var(--font-body); }
+  .font-heading { font-family: var(--font-heading); }
   .font-display { font-family: var(--font-display); }
   .text-balance { text-wrap: balance; }
   .glass {

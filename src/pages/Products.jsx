@@ -33,7 +33,18 @@ export default function Products() {
     base44.entities.Category.list().then(setCategories).catch(() => {});
   }, []);
 
-  const cats = categories.length ? categories.map((c) => c.name) : ['Rau Lá', 'Củ Quả', 'Trái Cây', 'Gia Vị'];
+  const normalizeCategoryName = (name = '') => {
+    const value = String(name || '').trim();
+    const normalized = value.toLowerCase();
+
+    if (['trái cây', 'trai cay', 'rau củ quả', 'rau cu qua'].includes(normalized)) {
+      return 'Rau Củ Quả';
+    }
+
+    return value;
+  };
+
+  const cats = categories.length ? categories.map((c) => normalizeCategoryName(c.name)) : ['Rau Lá', 'Củ Quả', 'Rau Củ Quả', 'Gia Vị'];
 
   const filtered = useMemo(() => {
     let list = [...products];

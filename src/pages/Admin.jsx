@@ -180,6 +180,8 @@ function ProductForm({ product, onClose, onSaved }) {
     } finally { setSaving(false); }
   };
 
+  const normalizedCategoryOptions = ['Rau Lá', 'Củ Quả', 'Rau Củ Quả', 'Gia Vị'];
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
       <div className="max-h-[92vh] w-full max-w-2xl overflow-auto rounded-t-3xl bg-white p-6 sm:rounded-3xl">
@@ -193,7 +195,7 @@ function ProductForm({ product, onClose, onSaved }) {
             <div className="space-y-1.5">
               <Label>Danh mục</Label>
               <select value={form.category} onChange={set('category')} className="h-10 w-full rounded-lg border border-emerald-900/15 bg-white px-3 text-sm">
-                {['Rau Lá', 'Củ Quả', 'Trái Cây', 'Gia Vị'].map((c) => <option key={c}>{c}</option>)}
+                {normalizedCategoryOptions.map((c) => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-1.5"><Label>Giá hiện tại (₫) *</Label><Input type="number" required value={form.price} onChange={set('price')} /></div>
