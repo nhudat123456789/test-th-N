@@ -80,7 +80,7 @@ export default function Contact() {
             <div className="rounded-2xl border border-emerald-900/10 bg-white p-5">
               <MapPin className="mb-2 text-accent" size={20} />
               <div className="text-sm font-semibold text-primary">Cửa hàng</div>
-              <div className="mt-1 text-sm text-muted-foreground">123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM</div>
+                <div className="mt-1 text-sm text-muted-foreground">Đường Đoàn Nguyễn Tuấn, Xã Quy Đức, Huyện Bình Chánh, TP. Hồ Chí Minh</div>
             </div>
             <div className="rounded-2xl border border-emerald-900/10 bg-white p-5">
               <Phone className="mb-2 text-accent" size={20} />

@@ -163,7 +163,7 @@ export default function Layout() {
           <div>
             <h4 className="mb-3 text-sm font-semibold text-primary">Liên hệ</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>123 Nguyễn Huệ, Q.1, TP.HCM</li>
+              <li>Đường Đoàn Nguyễn Tuấn, Xã Quy Đức, Huyện Bình Chánh, TP. Hồ Chí Minh</li>
               <li>1900 1234 (8h–20h)</li>
               <li>hello@raunhapho.vn</li>
             </ul>
