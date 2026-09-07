@@ -175,7 +175,7 @@ export default function ProductDetail() {
 
           <div className="mt-4 flex items-center gap-2 text-sm">
             <Truck size={16} className="text-accent" />
-            <span className="text-muted-foreground">Giao tươi trong 2 giờ · Tồn kho: <span className="font-medium text-primary">{product.stock ?? 0} {product.unit}</span></span>
+            <span className="text-muted-foreground">Giao tươi trong ngày · Tồn kho: <span className="font-medium text-primary">{product.stock ?? 0} {product.unit}</span></span>
           </div>
 
           {/* ADD TO CART */}

@@ -141,7 +141,7 @@ export default function Layout() {
               <span className="font-display text-2xl text-primary">Rau Nhà Phố</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Rau củ quả tươi sạch từ nông trại đến bếp nhà bạn. Giao nhanh trong 2 giờ.
+              Rau củ quả tươi sạch từ nông trại đến bếp nhà bạn. Giao trong ngày.
             </p>
           </div>
           <div>
@@ -173,7 +173,7 @@ export default function Layout() {
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:px-6">
             <span>© {new Date().getFullYear()} Rau Nhà Phố. Tươi từng lá.</span>
             <div className="flex items-center gap-4">
-              <span className="inline-flex items-center gap-1.5"><Truck size={14} /> Giao 2h nội thành</span>
+              <span className="inline-flex items-center gap-1.5"><Truck size={14} /> Giao trong ngày</span>
               <span className="inline-flex items-center gap-1.5"><ShieldCheck size={14} /> Cam kết tươi sạch</span>
             </div>
           </div>

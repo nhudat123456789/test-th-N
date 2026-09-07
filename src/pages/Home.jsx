@@ -58,13 +58,13 @@ export default function Home() {
         <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-16 sm:px-6">
           <div className="max-w-2xl text-white leaf-fade-up">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
-              <Leaf size={13} /> Thu hoạch sáng nay — giao trước trưa
+              <Leaf size={13} /> Thu hoạch sáng nay — giao trong ngày
             </span>
             <h1 className="mt-4 font-display text-5xl leading-[1.05] sm:text-7xl">
               Tươi mỗi lá,<br />sạch từng bữa.
             </h1>
             <p className="mt-4 max-w-md text-emerald-50/90">
-              Rau củ quả tươi sạch từ những nông trại uy tín, chọn lọc bằng tay và giao nhanh đến bếp nhà bạn.
+              Rau củ quả tươi sạch từ chính khu trồng của Rau Nhà Phố, được chọn lọc kỹ và giao nhanh đến bếp nhà bạn.
             </p>
           </div>
           <form onSubmit={search} className="mt-8 flex max-w-xl items-center gap-2 rounded-full bg-white p-2 shadow-2xl shadow-emerald-950/30">
@@ -84,7 +84,7 @@ export default function Home() {
       <section className="border-b border-emerald-900/10 bg-white">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 sm:px-6 md:grid-cols-4">
           {[
-          { icon: Truck, t: 'Giao 2h', s: 'Nội thành TP.HCM' },
+          { icon: Truck, t: 'Giao trong ngày', s: 'Nội thành TP.HCM' },
           { icon: Leaf, t: 'Tươi sạch', s: 'Nguồn gốc rõ ràng' },
           { icon: ShieldCheck, t: 'Cam kết', s: 'Đổi trả nếu héo' },
           { icon: Clock, t: 'Thu hoạch', s: 'Sáng hôm nay' }].
@@ -199,7 +199,7 @@ export default function Home() {
         <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center text-white sm:px-12">
           <Leaf className="mx-auto mb-4 text-accent" size={32} />
           <h2 className="text-4xl sm:text-5xl [font-family:'Be_Vietnam_Pro',_sans-serif]">Bếp nhà bạn đáng có rau tươi</h2>
-          <p className="mx-auto mt-3 max-w-md text-emerald-50/90">Đặt hàng ngay hôm nay — giao tươi tận cửa trong 2 giờ.</p>
+          <p className="mx-auto mt-3 max-w-md text-emerald-50/90">Đặt hàng ngay hôm nay — giao tươi tận cửa trong ngày.</p>
           <Link to="/products">
             <Button className="mt-6 rounded-full bg-white px-8 text-primary hover:bg-emerald-50">Mua sắm ngay</Button>
           </Link>

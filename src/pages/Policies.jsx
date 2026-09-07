@@ -6,7 +6,7 @@ const SECTIONS = [
     title: 'Chính sách vận chuyển',
     body: [
       'Rau Nhà Phố giao hàng tươi sạch tận cửa cho khách hàng tại khu vực nội thành TP.HCM.',
-      'Thời gian giao hàng dự kiến: trong vòng 2 giờ kể từ khi xác nhận đơn đối với khu vực nội thành, và trong ngày đối với các quận xa hơn.',
+      'Thời gian giao hàng dự kiến: trong ngày kể từ khi xác nhận đơn.',
       'Phí vận chuyển: Miễn phí cho đơn hàng từ 150.000₫. Đơn dưới mức này phụ phí 20.000₫.',
       'Khách hàng sẽ nhận được thông báo về thời gian giao cụ thể qua số điện thoại đã đăng ký.',
     ],

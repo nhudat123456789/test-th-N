@@ -182,7 +182,7 @@ export default function Checkout() {
             <Button type="submit" disabled={loading} className="mt-5 w-full rounded-full bg-accent py-6 text-white hover:bg-accent/90">
               {loading ? 'Đang xử lý...' : 'Đặt hàng'}
             </Button>
-            <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><Truck size={13} /> Giao tươi trong 2 giờ nội thành</p>
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><Truck size={13} /> Giao tươi trong ngày</p>
           </div>
         </div>
       </form>
