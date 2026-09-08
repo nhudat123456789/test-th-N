@@ -96,7 +96,7 @@ export default function Contact() {
           <div className="mt-6 overflow-hidden rounded-2xl border border-emerald-900/10">
             <iframe
               title="Bản đồ Rau Nhà Phố"
-              src="https://www.google.com/maps?q=Nguyen+Hue+Street+Ho+Chi+Minh+City&output=embed"
+              src="https://www.google.com/maps?q=10.642398,106.643768&output=embed"
               className="h-[320px] w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
