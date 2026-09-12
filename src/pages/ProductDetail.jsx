@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useCart } from '@/lib/cart-context';
 import { useAuth } from '@/lib/AuthContext';
-import { ShoppingCart, Minus, Plus, ChevronRight, MapPin, Truck } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, ChevronRight, MapPin } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
 function DotRating({ value = 0, size = 18, interactive = false, onChange }) {
@@ -82,6 +82,7 @@ export default function ProductDetail() {
   const onSale = product.old_price && product.old_price > product.price;
   const images = product.images?.length ? product.images : [];
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+  const description = product.name === 'Combo 3 Ngày Rau Củ' ? 'Combo 3 ngày rau củ : cải xanh, xà lách, rau muống, rau cải, cà chua và các loại rau xanh theo mùa. Tiết kiệm 26% so với mua lẻ.' : product.name === 'Combo Rau Sạch Cả Tuần' ? 'Combo rau đa dạng cho cả tuần: cải xanh, xà lách, rau muống, rau cải, cà chua và các loại rau xanh theo mùa. Tiết kiệm 18% so với mua lẻ.' : product.description || 'Sản phẩm tươi sạch, chọn lọc kỹ, giao đến tay bạn trong ngày thu hoạch.';
 
   const handleAdd = () => {
     addItem(product, qty);
@@ -171,12 +172,7 @@ export default function ProductDetail() {
             }
           </div>
 
-          <p className="mt-6 leading-relaxed text-muted-foreground">{product.description || 'Sản phẩm tươi sạch, chọn lọc kỹ, giao đến tay bạn trong ngày thu hoạch.'}</p>
-
-          <div className="mt-4 flex items-center gap-2 text-sm">
-            <Truck size={16} className="text-accent" />
-            <span className="text-muted-foreground">Giao tươi trong ngày · Tồn kho: <span className="font-medium text-primary">{product.stock ?? 0} {product.unit}</span></span>
-          </div>
+          <p className="mt-6 leading-relaxed text-muted-foreground">{description}</p>
 
           {/* ADD TO CART */}
           <div className="mt-8 flex items-center gap-3">
